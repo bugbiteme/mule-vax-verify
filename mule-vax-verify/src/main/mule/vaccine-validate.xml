@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <http:listener-config name="vaccine-validate-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="vaccine-validate-config" api="resource::bcd22009-150c-4d20-bbab-cb114a7eab07:vaccine-validate:1.0.1:raml:zip:vaccine-validate.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="a3fd2f6d-0b76-475b-b685-c7f05fe6ed3c" basePath="/api">
+		<http:request-connection host="mule-vax-patient.us-w1.cloudhub.io"/>
+	</http:request-config>
+	<flow name="vaccine-validate-main">
+        <http:listener config-ref="vaccine-validate-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="vaccine-validate-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="vaccine-validate-console">
+        <http:listener config-ref="vaccine-validate-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="vaccine-validate-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\verify-vaccine:vaccine-validate-config">
+        <logger level="INFO" message="get:\verify-vaccine:vaccine-validate-config" />
+		<http:request method="GET" doc:name="Request" doc:id="cce9c829-b40c-425a-994c-bc775971d1d8" config-ref="HTTP_Request_configuration" path="/vaccine-status">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"firstName": attributes.queryParams.firstName,
+	"lastName": attributes.queryParams.lastName,
+	"dob": attributes.queryParams.dob
+}]]]></http:query-params>
+		</http:request>
+		<choice doc:name="Choice" doc:id="0c058db4-0977-4f94-8817-ac075f5bc459" >
+			<when doc:id="8eb0d8b3-23a8-4a0c-8e36-34f2511a9731" expression='#[output application/java&#10;---&#10;upper(payload.doses."type"[0]) == "PFIZER"]'>
+				<choice doc:name="Choice" doc:id="c8f1cc27-c4a4-4f55-8ec6-cd751ed1dba0" >
+					<when doc:id="bbc79286-8742-4475-8c8d-49074588e0b9" expression="#[sizeOf(payload.doses)==1]">
+						<ee:transform doc:name="Pfizer-partially-vaccinated" doc:id="f059eee3-5630-4878-87e4-c580a2b8d6ac" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	vaccineStatus: "partially-vaccinated",
+	firstName: payload.firstName,
+	lastName: payload.lastName,
+	dob: payload.dob,
+	doses: payload.doses map ( dose , indexOfDose ) -> {
+		provider: dose.provider,
+		doa: dose.doa,
+		lotNumber: dose.lotNumber,
+		"type": dose."type"
+	}
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+					</when>
+					<when doc:id="0c1997da-67ea-45cd-b54e-11b83878e782" expression="#[sizeOf(payload.doses)==2]">
+						<ee:transform doc:name="Pfizer-fully-vaccinated" doc:id="713ffe8a-4d24-4505-a3f1-31d0eccea8b3" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	vaccineStatus: "fully-vaccinated",
+	firstName: payload.firstName,
+	lastName: payload.lastName,
+	dob: payload.dob,
+	doses: payload.doses map ( dose , indexOfDose ) -> {
+		provider: dose.provider,
+		doa: dose.doa,
+		lotNumber: dose.lotNumber,
+		"type": dose."type"
+	}
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+					</when>
+					<otherwise >
+						<ee:transform doc:name="Pfizer-fully-vaccinated" doc:id="53427b93-1cb8-4cae-b452-385862a90550" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	vaccineStatus: "fully-vaccinated",
+	firstName: payload.firstName,
+	lastName: payload.lastName,
+	dob: payload.dob,
+	doses: payload.doses map ( dose , indexOfDose ) -> {
+		provider: dose.provider,
+		doa: dose.doa,
+		lotNumber: dose.lotNumber,
+		"type": dose."type"
+	}
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+					</otherwise>
+				</choice>
+			</when>
+			<when doc:id="6fa574f6-0dbe-4ae7-907b-0ab484c49514" expression='#[output application/java&#10;---&#10;upper(payload.doses."type"[0]) == "MODERNA"]'>
+				<choice doc:name="Choice" doc:id="fde53e5b-6709-420a-a562-4f65a07bf5e6" >
+					<when doc:id="39b002ce-f9e7-4d02-956a-ad139e66a325" expression="#[sizeOf(payload.doses)==1]">
+						<ee:transform doc:name="Moderna-partially-vaccinated" doc:id="7207cb74-b185-4900-9e38-81742f12992a" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	vaccineStatus: "partially-vaccinated",
+	firstName: payload.firstName,
+	lastName: payload.lastName,
+	dob: payload.dob,
+	doses: payload.doses map ( dose , indexOfDose ) -> {
+		provider: dose.provider,
+		doa: dose.doa,
+		lotNumber: dose.lotNumber,
+		"type": dose."type"
+	}
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+					</when>
+					<when doc:id="ddb64b89-d324-442d-8c97-5e8f2bea1c59" expression="#[sizeOf(payload.doses)==2]">
+						<ee:transform doc:name="Moderna-fully-vaccinated" doc:id="55140492-b3a6-419e-aab7-5b750a6aa74d" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	vaccineStatus: "fully-vaccinated",
+	firstName: payload.firstName,
+	lastName: payload.lastName,
+	dob: payload.dob,
+	doses: payload.doses map ( dose , indexOfDose ) -> {
+		provider: dose.provider,
+		doa: dose.doa,
+		lotNumber: dose.lotNumber,
+		"type": dose."type"
+	}
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+					</when>
+					<otherwise >
+						<ee:transform doc:name="Moderna-fully-vaccinated" doc:id="a2c9e9b7-fa15-4c1b-9b88-445f3d4cd689" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	vaccineStatus: "fully-vaccinated",
+	firstName: payload.firstName,
+	lastName: payload.lastName,
+	dob: payload.dob,
+	doses: payload.doses map ( dose , indexOfDose ) -> {
+		provider: dose.provider,
+		doa: dose.doa,
+		lotNumber: dose.lotNumber,
+		"type": dose."type"
+	}
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+					</otherwise>
+				</choice>
+			</when>
+			<when doc:id="68107ddd-b2ae-43e9-a18c-15f4bfb06d63" expression='#[output application/java&#10;---&#10;upper(payload.doses."type"[0]) == "JOHNSON &amp; JOHNSON"]'>
+				<choice doc:name="Choice" doc:id="4561c652-2394-439d-81cd-3587401dc9c2" >
+					<when doc:id="35ef9c95-0f63-4e3d-b12b-675971afdcc2" expression="#[sizeOf(payload.doses)==1]">
+						<ee:transform doc:name="JJ-fully-vaccinated" doc:id="4d929081-cf9c-46a7-8637-aa12eda2dc30" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	vaccineStatus: "fully-vaccinated",
+	firstName: payload.firstName,
+	lastName: payload.lastName,
+	dob: payload.dob,
+	doses: payload.doses map ( dose , indexOfDose ) -> {
+		provider: dose.provider,
+		doa: dose.doa,
+		lotNumber: dose.lotNumber,
+		"type": dose."type"
+	}
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+					</when>
+					<otherwise >
+						<ee:transform doc:name="JJ-fully-vaccinated" doc:id="5275ebea-51f6-404d-a7a9-b8ed07648f4e" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	vaccineStatus: "fully-vaccinated",
+	firstName: payload.firstName,
+	lastName: payload.lastName,
+	dob: payload.dob,
+	doses: payload.doses map ( dose , indexOfDose ) -> {
+		provider: dose.provider,
+		doa: dose.doa,
+		lotNumber: dose.lotNumber,
+		"type": dose."type"
+	}
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+					</otherwise>
+				</choice>
+			</when>
+			<when doc:id="22cb3086-d10f-4308-827a-561f7b6b100b" expression='#[payload.firstName == ""]' >
+				<ee:transform doc:name="not-found" doc:id="4eb25c5c-ebf0-481a-b9b9-980e4091d251" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	vaccineStatus: "not-found"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="not-found" doc:id="5071ef3d-9035-40d9-9e0f-14b376cb1521" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	vaccineStatus: "not-found",
+	firstName: payload.firstName,
+	lastName: payload.lastName,
+	dob: payload.dob,
+	doses: payload.doses map ( dose , indexOfDose ) -> {
+		provider: dose.provider,
+		doa: dose.doa,
+		lotNumber: dose.lotNumber,
+		"type": dose."type"
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+    </flow>
+</mule>

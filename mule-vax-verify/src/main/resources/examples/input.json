@@ -1,0 +1,19 @@
+{
+  "firstName": "Jack",
+  "lastName": "Sheppard",
+  "dob": "1992-05-18",
+  "doses": [
+    {
+      "provider": "LAX",
+      "doa": "3/22/21",
+      "lotNumber": "1234",
+      "type": "Pfizer"
+    },
+    {
+      "provider": "WALGREENS",
+      "doa": "4/19/21",
+      "lotNumber": "5678",
+      "type": "Pfizer"
+    }
+  ]
+}

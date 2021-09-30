@@ -1,0 +1,179 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="data" format="json">
+      <types:shape format="weave" example="examples/input.json"><![CDATA[%dw 2.0
+
+type data = {|
+  firstName: String, 
+  lastName: String, 
+  dob: String, 
+  doses: Array<{|    provider: String,     doa: String,     lotNumber: String,     "type": String  |}>
+|} {"example": "{\\\"firstName\\\":\\\"Jack\\\",\\\"lastName\\\":\\\"Sheppard\\\",\\\"dob\\\":\\\"1992-05-18\\\",\\\"doses\\\":[{\\\"provider\\\":\\\"LAX\\\",\\\"doa\\\":\\\"3\\/22\\/21\\\",\\\"lotNumber\\\":\\\"1234\\\",\\\"type\\\":\\\"Pfizer\\\"},{\\\"provider\\\":\\\"WALGREENS\\\",\\\"doa\\\":\\\"4\\/19\\/21\\\",\\\"lotNumber\\\":\\\"5678\\\",\\\"type\\\":\\\"Pfizer\\\"}]}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#0c058db4-0977-4f94-8817-ac075f5bc459">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#22cb3086-d10f-4308-827a-561f7b6b100b">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#3371b55d-f26d-4756-a4f3-d04c8ba95e32">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#8eb0d8b3-23a8-4a0c-8e36-34f2511a9731">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#6fa574f6-0dbe-4ae7-907b-0ab484c49514">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#68107ddd-b2ae-43e9-a18c-15f4bfb06d63">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#08a4b59a-41aa-46c2-a3d6-47feed479623">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#39b002ce-f9e7-4d02-956a-ad139e66a325">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#f059eee3-5630-4878-87e4-c580a2b8d6ac">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#713ffe8a-4d24-4505-a3f1-31d0eccea8b3">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#53427b93-1cb8-4cae-b452-385862a90550">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#7207cb74-b185-4900-9e38-81742f12992a">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#55140492-b3a6-419e-aab7-5b750a6aa74d">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#a2c9e9b7-fa15-4c1b-9b88-445f3d4cd689">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#4d929081-cf9c-46a7-8637-aa12eda2dc30">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#5275ebea-51f6-404d-a7a9-b8ed07648f4e">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#4eb25c5c-ebf0-481a-b9b9-980e4091d251">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#5071ef3d-9035-40d9-9e0f-14b376cb1521">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
